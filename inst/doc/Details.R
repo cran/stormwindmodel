@@ -177,19 +177,45 @@ data("floyd_tracks")
 full_track <- create_full_track(hurr_track = floyd_tracks, tint = 0.25)
 full_track %>% slice(1:3)
 
-## ----message = FALSE, warning = FALSE, fig.align = "center", fig.width = 8, fig.height = 4----
+## ----results = "hide", warning = FALSE, message = FALSE------------------
+library(sf)
+library(maps)
+library(ggplot2)
+
+floyd_states <- sf::st_as_sf(map("state", plot = FALSE, fill = TRUE)) %>% 
+  dplyr::filter(ID %in% c("north carolina", "south carolina", "maryland",
+                          "georgia", "florida", "virginia", "delaware", 
+                          "pennsylvania", "west virginia", "new jersey",
+                          "new york"))
+
+## ------------------------------------------------------------------------
 floyd_15_min <- create_full_track(floyd_tracks)
 floyd_2_hrs <- create_full_track(floyd_tracks, tint = 2)
 
-library(ggmap)
-us_map <- get_map(location = "georgia", zoom = 5)
-a <- ggmap(us_map)
-b <- a + geom_point(data = floyd_15_min, aes(x = -tclon, y = tclat,
-                                        color = vmax), size = 0.5) + 
+## ----message = FALSE, warning = FALSE, fig.align = "center", fig.width = 8, fig.height = 4----
+floyd_15_min <- floyd_15_min %>% 
+  mutate(tclon = -tclon) %>% 
+  st_as_sf(coords = c("tclon", "tclat")) %>% 
+  st_set_crs(4326)
+floyd_2_hrs <- floyd_2_hrs %>% 
+  mutate(tclon = -tclon) %>% 
+  st_as_sf(coords = c("tclon", "tclat")) %>% 
+  st_set_crs(4326)
+
+a <- ggplot() + 
+  geom_sf(data = floyd_states, 
+          fill = "aliceblue") + 
+  xlim(c(-90, -70)) + 
+  ylim(c(24, 46))
+b <- a +
+  geom_sf(data = floyd_15_min,
+          size = 0.5, color = "red") + 
   ggtitle("Interpolated to 15 minutes")
-c <- a + geom_point(data = floyd_2_hrs, aes(x = -tclon, y = tclat,
-                                       color = vmax), size = 0.5) + 
-  ggtitle("Interpolated to 2 hours")
+c <- a + 
+    geom_sf(data = floyd_2_hrs,
+            size = 0.5, color = "red") + 
+  ggtitle("Interpolated to 2 hours") 
+
 gridExtra::grid.arrange(b, c, ncol = 2)
 
 ## ----eval = c(3:4), echo = c(1, 4)---------------------------------------
@@ -197,9 +223,6 @@ with_wind_radii <- add_wind_radii(full_track = full_track)
 save(with_wind_radii, file = "data/with_wind_radii.RData")
 load("data/with_wind_radii.RData")
 with_wind_radii %>% slice(c(1:3, (n()-3):n()))
-
-## ----eval = FALSE, echo = FALSE------------------------------------------
-#  Here is an example of Hurricane Floyd tracks, with estimated $R_{max}$ and $V_{max,G}$ shown by point size and color, respectively:
 
 ## ----echo = FALSE, warning = FALSE, fig.align = "center", fig.width = 4, fig.height = 4, eval = FALSE----
 #  a + geom_point(data = with_wind_radii,

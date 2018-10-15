@@ -25,7 +25,7 @@ floyd_winds %>%
 ## ----fig.width = 8-------------------------------------------------------
 map_wind(floyd_winds)
 
-## ----message = FALSE, warning = FALSE------------------------------------
+## ----message = FALSE, warning = FALSE, results = "hide"------------------
 library(tigris)
 new_orleans <- tracts(state = "LA", county = c("Orleans")) 
 
@@ -38,32 +38,22 @@ head(new_orleans_tract_centers)
 new_orleans_tract_centers <- new_orleans_tract_centers %>%
   tbl_df() %>%
   mutate(gridid = unique(new_orleans@data$TRACTCE)) %>%
-  rename(glat = y, 
-         glon = x)
+  dplyr::rename(glat = y, 
+                glon = x)
 head(new_orleans_tract_centers)
 
-## ----message = FALSE, warning = FALSE------------------------------------
+## ----message = FALSE, warning = FALSE, fig.width = 7---------------------
+library(sf)
+new_orleans <- new_orleans %>% 
+  st_as_sf()
+new_orleans_centers <- new_orleans_tract_centers %>% 
+  st_as_sf(coords = c("glon", "glat")) %>% 
+  st_set_crs(4269)
+
 library(ggplot2)
-library(ggmap)
-library(sp)
-
-new_orleans_bbox <- bbox(new_orleans)
-
-## ----message = FALSE, warning = FALSE, fig.width = 6, fig.height = 6, eval = FALSE, echo = c(2:10)----
-#  png(filename = "figures/new_orleans1.png", height = 400, width = 400)
-#  get_map(location = new_orleans_bbox + c(-0.1, -0.1, 0.1, 0.1), source = "stamen") %>%
-#    ggmap() +
-#    geom_polygon(data = fortify(new_orleans),
-#                 aes(x = long, y = lat, group = group),
-#                 color = "black", fill = NA) +
-#    theme_void() +
-#    geom_point(data = new_orleans_tract_centers,
-#               aes(x = glon, y = glat, group = NULL),
-#               color = "red", size = 1, alpha = 0.5)
-#  dev.off()
-
-## ----echo = FALSE, fig.width = 6, fig.height = 6-------------------------
-knitr::include_graphics("figures/new_orleans1.png")
+ggplot() + 
+  geom_sf(data = new_orleans) + 
+  geom_sf(data = new_orleans_centers, color = "red", size = 0.6)
 
 ## ----eval = FALSE, echo = c(1:2)-----------------------------------------
 #  new_orleans_tracts_katrina <- get_grid_winds(hurr_track = katrina_tracks,
@@ -74,27 +64,16 @@ knitr::include_graphics("figures/new_orleans1.png")
 load("data/new_orleans.Rdata")
 head(new_orleans_tracts_katrina)
 
-## ----message = FALSE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 6----
-library(viridis)
-
+## ------------------------------------------------------------------------
 new_orleans <- new_orleans %>% 
-  fortify(region = "TRACTCE") %>%
-  left_join(new_orleans_tracts_katrina, by = c("id" = "gridid"))
+  left_join(new_orleans_tracts_katrina, by = c("TRACTCE" = "gridid"))
 
-## ----eval = FALSE, echo = c(2:9)-----------------------------------------
-#  png("figures/new_orleans2.png", height = 400, width = 500)
-#  get_map(location = new_orleans_bbox + c(-0.1, -0.1, 0.1, 0.1), source = "stamen") %>%
-#    ggmap() +
-#    geom_polygon(data = new_orleans,
-#                 aes(x = long, y = lat, group = group,
-#                     fill = vmax_sust),
-#                 color = "black", alpha = 0.7, size = 0.2) +
-#    scale_fill_viridis(name = "Maximum\nsustained\nwind (m / s)") +
-#    theme_void()
-#  dev.off()
-
-## ----echo = FALSE, fig.width= 7, fig.height = 5--------------------------
-knitr::include_graphics("figures/new_orleans2.png")
+## ---- fig.width = 7, message = FALSE, warning = FALSE--------------------
+library(viridis)
+ggplot() + 
+  geom_sf(data = new_orleans, aes(fill = vmax_sust)) + 
+  geom_sf(data = new_orleans_centers, color = "red", size = 0.6) + 
+  scale_fill_viridis(name = "Maximum\nsustained\nwinds (m/s)")
 
 ## ----warning = FALSE, message = FALSE, fig.width = 6, fig.height = 2.5----
 dare_county <- county_points %>% # Get grid point information for Dare County
