@@ -4,10 +4,13 @@
 \alias{calc_and_summarize_grid_wind}
 \title{Calculate and summarize grid winds}
 \usage{
-
-  calc_and_summarize_grid_wind(grid_point = stormwindmodel::county_points[1,
-  ], with_wind_radii = add_wind_radii(), tint = 0.25,
-  gust_duration_cut = 20, sust_duration_cut = 20)
+calc_and_summarize_grid_wind(
+  grid_point = stormwindmodel::county_points[1, ],
+  with_wind_radii = add_wind_radii(),
+  tint = 0.25,
+  gust_duration_cut = 20,
+  sust_duration_cut = 20
+)
 }
 \arguments{
 \item{grid_point}{A one-row dataframe with the grid id, latitude, and
@@ -18,7 +21,7 @@ parameters for the Willoughby wind model, as created by
 \code{\link{add_wind_radii}}.}
 
 \item{tint}{Interval (in hours) to which to interpolate the tracks. The
-default is 0.25 (i.e., 15 minutes)}
+default is 0.25 (i.e., 15 minutes).}
 
 \item{gust_duration_cut}{The wind speed, in meters per second, to use as a
 cutoff point for determining the duration of gust winds. The function

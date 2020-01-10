@@ -1,11 +1,11 @@
-## ----echo = FALSE, message = FALSE---------------------------------------
+## ----echo = FALSE, message = FALSE--------------------------------------------
 library(stormwindmodel)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(gridExtra)
 
-## ----echo = FALSE--------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 var_names <- dplyr::data_frame(var = c("`vmax`",
                                        "`vmax_sfc_sym`",
                                        "`vmax_gl`",
@@ -169,15 +169,15 @@ var_names <- dplyr::data_frame(var = c("`vmax`",
 knitr::kable(var_names, col.names = c("R variable", "Expression in equations",
                                       "Definition", "Units"))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::create_full_track
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data("floyd_tracks")
 full_track <- create_full_track(hurr_track = floyd_tracks, tint = 0.25)
 full_track %>% slice(1:3)
 
-## ----results = "hide", warning = FALSE, message = FALSE------------------
+## ----results = "hide", warning = FALSE, message = FALSE-----------------------
 library(sf)
 library(maps)
 library(ggplot2)
@@ -188,7 +188,7 @@ floyd_states <- sf::st_as_sf(map("state", plot = FALSE, fill = TRUE)) %>%
                           "pennsylvania", "west virginia", "new jersey",
                           "new york"))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 floyd_15_min <- create_full_track(floyd_tracks)
 floyd_2_hrs <- create_full_track(floyd_tracks, tint = 2)
 
@@ -218,7 +218,7 @@ c <- a +
 
 gridExtra::grid.arrange(b, c, ncol = 2)
 
-## ----eval = c(3:4), echo = c(1, 4)---------------------------------------
+## ----eval = c(3:4), echo = c(1, 4)--------------------------------------------
 with_wind_radii <- add_wind_radii(full_track = full_track)
 save(with_wind_radii, file = "data/with_wind_radii.RData")
 load("data/with_wind_radii.RData")
@@ -231,37 +231,37 @@ with_wind_radii %>% slice(c(1:3, (n()-3):n()))
 #    scale_color_continuous(name = expression(V[maxG])) +
 #    scale_size_continuous(name = expression(R[max]))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::add_wind_radii
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::degrees_to_radians
 stormwindmodel:::latlon_to_km
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::calc_forward_speed
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::calc_bearing
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  tcspd_u = tcspd * cos(degrees_to_radians(tcdir))
 #  tcspd_v = tcspd * sin(degrees_to_radians(tcdir))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::remove_forward_speed
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::calc_gradient_speed
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data(landmask)
 head(landmask)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::check_over_land
 
-## ----fig.width = 8, fig.height = 5---------------------------------------
+## ----fig.width = 8, fig.height = 5--------------------------------------------
 floyd_tracks$land <- mapply(stormwindmodel:::check_over_land,
                             tclat = floyd_tracks$latitude,
                             tclon = -floyd_tracks$longitude)
@@ -272,55 +272,55 @@ ggplot(landmask, aes(x = longitude - 360, y = latitude, color = land)) +
   scale_color_discrete("Land mask") + 
   scale_shape_discrete("Track over land")
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  over_land = mapply(check_over_land, tclat, tclon),
 #  vmax_gl = mapply(calc_gradient_speed,
 #                  vmax_sfc_sym = vmax_sfc_sym,
 #                  over_land = over_land)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::will7a
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::will10a
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::will10b
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::will10c
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::will3_right
 stormwindmodel::will3_deriv_func
 stormwindmodel::solve_for_xi
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::calc_R1
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  R2 = ifelse(Rmax > 20, R1 + 25, R1 + 15)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::calc_grid_wind
 
-## ----echo = FALSE--------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 data(county_points)
 county_points[1, ]
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 grid_point <- county_points %>% filter(gridid == "37055")
 grid_wind <- calc_grid_wind(grid_point = grid_point,
                             with_wind_radii = with_wind_radii)
 grid_wind %>% slice(1:5)
 
-## ----warning = FALSE, fig.width = 6, fig.align = "center"----------------
+## ----warning = FALSE, fig.width = 6, fig.align = "center"---------------------
 ggplot(grid_wind, aes(x = date, y = windspeed)) + 
   geom_line() + 
   xlab("Observation time (UTC)") + 
   ylab("Modeled surface wind (m / s)")
 
-## ----fig.width = 8-------------------------------------------------------
+## ----fig.width = 8------------------------------------------------------------
 county_list <- split(county_points, f = county_points$gridid)
 county_winds <- lapply(county_list, FUN = calc_grid_wind,
                        with_wind_radii = with_wind_radii)
@@ -331,29 +331,29 @@ county_winds %>%
   filter(date == "1999-09-16 08:00:00 UTC") %>%
   map_wind(value = "windspeed")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::summarize_grid_wind
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 summarize_grid_wind(grid_wind = grid_wind)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 summarize_grid_wind(grid_wind = grid_wind, gust_duration_cut = 15, 
                     sust_duration_cut = 15)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 calc_and_summarize_grid_wind(grid_point = grid_point, 
                              with_wind_radii = with_wind_radii,
                              gust_duration_cut = 15, 
                              sust_duration_cut = 15)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::will1
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::gradient_to_surface
 
-## ---- fig.align = "center", fig.width = 4, fig.height = 2.5--------------
+## ---- fig.align = "center", fig.width = 4, fig.height = 2.5-------------------
 rf_example <- data.frame(r = 0:800,
                          rf = mapply(
                            stormwindmodel:::gradient_to_surface, 
@@ -365,19 +365,19 @@ ggplot(rf_example, aes(x = r, y = rf)) +
   ylab("Reduction factor") + 
   ylim(c(0.5, 0.9))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::calc_bearing
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  gwd = (90 + chead) %% 360
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 add_inflow
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel:::add_forward_speed
 
-## ----echo = FALSE--------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 gust_factors <- data.frame(loc = c("In-land", 
                                    "Just offshore",
                                    "Just onshore",
@@ -385,68 +385,68 @@ gust_factors <- data.frame(loc = c("In-land",
                            gust_factor = c(1.49, 1.36, 1.23, 1.11))
 knitr::kable(gust_factors, col.names = c("Location", "Gust factor ($G_{3,60}$)"))
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  gustspeed = windspeed * 1.49
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  data("katrina_tracks")
 #  grid_winds_katrina <- get_grid_winds(hurr_track = katrina_tracks,
 #                                       grid_df = county_points)
 
-## ----cache = TRUE, echo = c(3), eval = c(2:3)----------------------------
+## ----cache = TRUE, echo = c(3), eval = c(2:3)---------------------------------
 save(grid_winds_katrina, file = "data/grid_winds_katrina.Rdata")
 load("data/grid_winds_katrina.Rdata")
 head(grid_winds_katrina)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stormwindmodel::get_grid_winds
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  grid_winds_katrina <- get_grid_winds(hurr_track = katrina_tracks,
 #                                       grid_df = county_points)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_gust") + 
   ggtitle("Maximum gust wind speeds")
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_sust") + 
   ggtitle("Maximum sustained wind speeds")
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 # Show in knots
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_gust",
               wind_metric = "knots") + 
   ggtitle("Maximum gust wind speeds")
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_sust",
               wind_metric = "knots") + 
   ggtitle("Maximum sustained wind speeds")
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 # Sustained winds of 20 m / s or more
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_sust", 
          break_point = 20)
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 # Sustained winds of 34 knots or more
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_sust",
                           wind_metric = "knots", break_point = 34)
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 # Sustained winds of 50 knots or more
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_sust",
                           wind_metric = "knots", break_point = 50)
 add_storm_track(katrina_tracks, plot_object = katrina_winds)
 
-## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE-----
+## ----fig.width = 7, fig.height = 4, warning = FALSE, message = FALSE----------
 # Sustained winds of 64 knots or more
 katrina_winds <- map_wind(grid_winds_katrina, value = "vmax_sust",
                           wind_metric = "knots",  break_point = 64)

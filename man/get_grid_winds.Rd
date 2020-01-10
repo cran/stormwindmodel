@@ -4,9 +4,13 @@
 \alias{get_grid_winds}
 \title{Determine hurricane winds at locations}
 \usage{
-get_grid_winds(hurr_track = stormwindmodel::floyd_tracks,
-  grid_df = stormwindmodel::county_points, tint = 0.25,
-  gust_duration_cut = 20, sust_duration_cut = 20)
+get_grid_winds(
+  hurr_track = stormwindmodel::floyd_tracks,
+  grid_df = stormwindmodel::county_points,
+  tint = 0.25,
+  gust_duration_cut = 20,
+  sust_duration_cut = 20
+)
 }
 \arguments{
 \item{hurr_track}{Dataframe with hurricane track data for a single
@@ -25,7 +29,7 @@ Western hemisphere (so, almost all those for Atlantic basin storms)
 expressed as negative values.}
 
 \item{tint}{Interval (in hours) to which to interpolate the tracks. The
-default is 0.25 (i.e., 15 minutes)}
+default is 0.25 (i.e., 15 minutes).}
 
 \item{gust_duration_cut}{The wind speed, in meters per second, to use as a
 cutoff point for determining the duration of gust winds. The function
