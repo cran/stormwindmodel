@@ -6,7 +6,7 @@ library(tidyr)
 library(gridExtra)
 
 ## ----echo = FALSE-------------------------------------------------------------
-var_names <- dplyr::data_frame(var = c("`vmax`",
+var_names <- dplyr::tibble(var = c("`vmax`",
                                        "`vmax_sfc_sym`",
                                        "`vmax_gl`",
                                        "`tclat`",
@@ -393,7 +393,7 @@ knitr::kable(gust_factors, col.names = c("Location", "Gust factor ($G_{3,60}$)")
 #  grid_winds_katrina <- get_grid_winds(hurr_track = katrina_tracks,
 #                                       grid_df = county_points)
 
-## ----cache = TRUE, echo = c(3), eval = c(2:3)---------------------------------
+## ----echo = c(3), eval = c(2:3)-----------------------------------------------
 save(grid_winds_katrina, file = "data/grid_winds_katrina.Rdata")
 load("data/grid_winds_katrina.Rdata")
 head(grid_winds_katrina)

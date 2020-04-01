@@ -1,3 +1,10 @@
+# stormwindmodel 0.1.3
+
+* Resolve a warning on CRAN when rebuilding vignettes in Windows that 
+seems to have resulted from the use of caching in one vignette.
+* Remove dplyr functions that are being deprecated ('select_', 'mutate_', 
+'filter_')
+
 # stormwindmodel 0.1.2
 
 * Resolve a warning on CRAN when rebuilding vignettes in Windows

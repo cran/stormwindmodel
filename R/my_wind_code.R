@@ -1,7 +1,7 @@
 #' Add Willoughby inputs and parameters
 #'
 #' Calculates a number of inputs and parameters needed for the Willoughby model
-#' for each observation of a storm track. This function intakes an inputed storm
+#' for each observation of a storm track. This function intakes an imputed storm
 #' track and calculates these parameters for each observation in the storm
 #' tracks.These inputs and parameters are later used to model wind speed
 #' at each grid point for every observation.
@@ -90,7 +90,6 @@ add_wind_radii <- function(full_track = create_full_track()){
 #'    \code{\link{add_wind_radii}}.
 #' @param grid_point A one-row dataframe with the grid id, latitude, and
 #'    longitude for a single location for which you want to model winds.
-#' @inheritParams create_full_track
 #'
 #' @return A dataframe with date (\code{date}) and modeled wind speed
 #'    (\code{windspeed}, in m / s) at the grid point location for all storm
