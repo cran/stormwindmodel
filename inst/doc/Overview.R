@@ -27,7 +27,8 @@ map_wind(floyd_winds)
 
 ## ----message = FALSE, warning = FALSE, results = "hide"-----------------------
 library(tigris)
-new_orleans <- tracts(state = "LA", county = c("Orleans")) 
+new_orleans <- tracts(state = "LA", county = c("Orleans"), 
+                      class = "sp") 
 
 ## ----message = FALSE----------------------------------------------------------
 library(rgeos)
